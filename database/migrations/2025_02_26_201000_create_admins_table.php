@@ -17,6 +17,8 @@ return new class extends Migration
                 CHECK (role_id = 1)
             ) INHERITS (users);
         ");
+
+        DB::statement('ALTER TABLE admins ADD CONSTRAINT admins_id_pkey PRIMARY KEY (id);');
     }
 
     /**

@@ -18,6 +18,8 @@ return new class extends Migration
                 CHECK (role_id = 2)
             ) INHERITS (users);
         ");
+
+        DB::statement('ALTER TABLE tourists ADD CONSTRAINT tourists_id_pkey PRIMARY KEY (id);');
     }
 
     /**
