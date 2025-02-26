@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('listings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('owner_id')->constrained('owners')->onDelete('cascade');
+            $table->string('title');
+            $table->text('description');
+            $table->string('location');
+            $table->string('city');
+            $table->integer('price');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->text('photo');
             $table->timestamps();
         });
     }
