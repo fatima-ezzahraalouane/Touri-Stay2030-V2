@@ -12,8 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("CREATE TYPE role_user AS ENUM ('Admin', 'Tourist', 'Owner')");
-
+        DB::statement("DO $$ BEGIN 
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'role_user') THEN
+                CREATE TYPE role_user AS ENUM ('Admin', 'Tourist', 'Owner');
+            END IF;
+        END $$;");
+    
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->enum('name_user', ['Admin', 'Tourist', 'Owner'])->unique();
