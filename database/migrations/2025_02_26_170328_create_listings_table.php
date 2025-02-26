@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('location');
-            $table->string('city');
+            $table->string('city')->nullable();
             $table->integer('price');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->text('photo');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->text('photo')->nullable();
             $table->timestamps();
         });
     }
