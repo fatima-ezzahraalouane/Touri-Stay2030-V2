@@ -45,9 +45,9 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/home', function () {
-        return view('home');
-    })->name('home');
+    Route::get('/tourist/home', function () {
+        return view('tourist.home');
+    })->name('tourist.home');
 
     Route::middleware(['role:Admin'])->group(function () {
         Route::get('/admin/dashboard', function () {

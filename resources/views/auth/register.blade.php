@@ -39,12 +39,18 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        <label>Rôle</label>
+    <select name="role" id="role-select" required>
+        <option value="Touriste">Tourist</option>
+        <option value="Propriétaire">Owner</option>
+    </select>
+
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                 {{ __('Already registered?') }}
             </a>
 
-            <x-primary-button class="ms-4">
+            <x-primary-button class="ms-4" type="submit">
                 {{ __('Register') }}
             </x-primary-button>
         </div>
