@@ -41,6 +41,11 @@ class Annonce extends Model
         return $this->hasMany(Favorite::class);
     }
 
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'annonce_id');
+    }
+
     public function getEquipementsArrayAttribute()
     {
         return json_decode($this->equipements) ?: [];
