@@ -40,4 +40,9 @@ class ReservationController extends Controller
         return redirect()->route('paiement.show', ['reservation' => $reservation->id])
                         ->with('message', 'Vous devez payer pour finaliser votre réservation.');
     }
+
+    public function checkAvailability(Request $request)
+    {
+        
+    }
 }
