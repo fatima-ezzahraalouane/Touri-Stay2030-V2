@@ -26,22 +26,20 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified', 'role:touriste'])->group(function () {
     Route::get('/touriste/dashboard', [TouristeController::class, 'dashboard'])->name('touriste.dashboard');
 
- // Page des favoris
- Route::get('/touriste/favorites', function () {
-    return view('touriste.favorites');
-})->name('touriste.favorites');
+    // Page des favoris
+    Route::get('/touriste/favorites', function () {
+        return view('touriste.favorites');
+    })->name('touriste.favorites');
 
 
 
-// Routes pour mettre à jour le profil
-Route::put('/touriste/profile/update', [ProfileController::class, 'update'])->name('touriste.profile.update');
+    // Routes pour mettre à jour le profil
+    Route::put('/touriste/profile/update', [ProfileController::class, 'update'])->name('touriste.profile.update');
 
-Route::get('/search', [TouristeController::class, 'search'])->name('touriste.search');
-Route::get('/annonces/{id}', [TouristeController::class, 'showAnnonce'])->name('touriste.annonce.show');
-Route::get('/favorites', [TouristeController::class, 'favorites'])->name('touriste.favorites');
-Route::post('/toggle-favorite', [TouristeController::class, 'toggleFavorite'])->name('touriste.toggle-favorite');
-
-
+    Route::get('/search', [TouristeController::class, 'search'])->name('touriste.search');
+    Route::get('/annonces/{id}', [TouristeController::class, 'showAnnonce'])->name('touriste.annonce.show');
+    Route::get('/favorites', [TouristeController::class, 'favorites'])->name('touriste.favorites');
+    Route::post('/toggle-favorite', [TouristeController::class, 'toggleFavorite'])->name('touriste.toggle-favorite');
 });
 
 Route::middleware('auth')->group(function () {
@@ -51,10 +49,10 @@ Route::middleware('auth')->group(function () {
 });
 
 
- //  propriétaires routes
+//  propriétaires routes
 Route::middleware(['auth', 'role:proprietaire'])->prefix('proprietaire')->group(function () {
     Route::get('/dashboard', [ProprietaireController::class, 'dashboard'])->name('proprietaire.dashboard');
-    
+
     Route::resource('annonces', ProprietaireController::class);
 });
 
@@ -65,10 +63,14 @@ Route::post('/profile/photo', [ProfileController::class, 'updateProfilePhoto'])-
 // administrateurs routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])
-            ->name('admin.dashboard');
+        ->name('admin.dashboard');
     Route::delete('/annonces/{id}', [AdminController::class, 'deleteAnnonce'])
-            ->name('admin.annonces.delete');
-    });
+        ->name('admin.annonces.delete');
+    Route::get('/paiement', [AdminController::class, 'paiement'])
+        ->name('admin.paiement');
+    // Route::get('/reservation', [AdminController::class, 'reservation'])
+    //     ->name('admin.reservation');
+});
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
