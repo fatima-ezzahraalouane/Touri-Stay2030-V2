@@ -7,6 +7,9 @@
     <title>TouriStay 2030 - {{ $annonce->titre }}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         .worldcup-gradient {
             background: linear-gradient(135deg, #862633 0%, #009A44 100%);
@@ -85,15 +88,11 @@
                     class="w-full h-full object-cover">
                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <span class="inline-block bg-[#009A44] text-white px-3 py-1 rounded-full text-sm font-medium mb-2">
+                        <div class="bg-gray-50  rounded-xl shadow-sm border border-gray-200">
+                            <span class="inline-block bg-[#009A44] text-gray-800 px-3  rounded-full text-sm font-medium mb-2">
                                 Mondial 2030
                             </span>
-                            <h1 class="text-3xl font-bold text-white">{{ $annonce->titre }}</h1>
-                        </div>
-                        <div class="text-white text-right">
-                            <div class="text-3xl font-bold">{{ $annonce->prix }} DH</div>
-                            <div class="text-sm">par nuit</div>
+                            <h1 class="text-3xl font-bold px-3 text-gray-800">{{ $annonce->titre }}</h1>
                         </div>
                     </div>
                 </div>
@@ -104,7 +103,7 @@
                 <div class="flex justify-between items-start mb-8">
                     <div class="space-y-4">
                         <div class="flex items-center space-x-4">
-                        <div class="worldcup-gradient px-3 py-1 bg-[#862633] text-white rounded-full text-sm">
+                            <div class="worldcup-gradient px-3 py-1 bg-[#862633] text-white rounded-full text-sm">
                                 <i class="fas fa-map-marker-alt mr-1"></i>
                                 {{ $annonce->pays }} , {{ $annonce->ville }}
                             </div>
@@ -124,15 +123,21 @@
                         <div class="space-y-3">
                             <div class="flex items-center text-sm text-gray-600">
                                 <i class="fas fa-calendar-alt text-[#009A44] mr-2"></i>
-                                <span>Du:  {{ \Carbon\Carbon::parse($annonce->disponible_du)->translatedFormat('d F Y') }}
+                                <span>Du: {{ \Carbon\Carbon::parse($annonce->disponible_du)->translatedFormat('d F Y') }}
                                 </span>
                             </div>
                             <div class="flex items-center text-sm text-gray-600">
                                 <i class="fas fa-calendar-check text-[#009A44] mr-2"></i>
-                                <span>Au:  {{ \Carbon\Carbon::parse($annonce->disponible_au)->translatedFormat('d F Y') }}
+                                <span>Au: {{ \Carbon\Carbon::parse($annonce->disponible_au)->translatedFormat('d F Y') }}
                                 </span>
                             </div>
                         </div>
+                        <!-- Reservation Button -->
+                        <button onclick="openModal()"
+                            class="w-full worldcup-gradient hover:opacity-90 text-white px-6 py-3 mt-2 rounded-lg font-medium transition duration-300 flex items-center justify-center space-x-2">
+                            <i class="fas fa-futbol"></i>
+                            <span>Réserver maintenant</span>
+                        </button>
                     </div>
                 </div>
 
@@ -176,7 +181,7 @@
                 </div>
 
                 <!-- Statistics Section -->
-                <!-- <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
                     <h2 class="text-xl font-bold text-[#862633] mb-6 flex items-center">
                         <i class="fas fa-chart-line mr-2"></i>
                         Statistiques de l'annonce
@@ -204,10 +209,88 @@
                             </div>
                         </div>
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Reservation Modal -->
+    <div id="reservationModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            <!-- Modal Header -->
+            <div class="worldcup-gradient p-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-white flex items-center">
+                        <i class="fas fa-futbol mr-3 animate-spin"></i>
+                        Réservation
+                    </h2>
+                    <button onclick="closeModal()" class="text-white hover:text-gray-200 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reservation Form -->
+            <form id="reservationForm" action="#" method="POST" class="p-6">
+                @csrf
+                <input type="hidden" name="annonce_id" value="{{ $annonce->id }}">
+
+                <!-- Prix récapitulatif -->
+                <div class="bg-gray-50 p-4 rounded-xl mb-6">
+                    <div class="text-center">
+                        <span class="text-3xl font-bold text-[#862633]">{{ $annonce->prix }} DH</span>
+                        <span class="text-gray-600">/nuit</span>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <label for="date_debut" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar-alt text-[#862633] mr-2"></i>
+                            Date d'arrivée
+                        </label>
+                        <input type="text"
+                            id="date_debut"
+                            name="date_debut"
+                            placeholder="Sélectionnez la date d'arrivée"
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-[#009A44] focus:ring focus:ring-[#009A44]/20 transition-all"
+                            required>
+                        <div id="date_debut_error" class="text-[#862633] text-sm mt-1"></div>
+                    </div>
+
+                    <div>
+                        <label for="date_fin" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar-check text-[#009A44] mr-2"></i>
+                            Date de départ
+                        </label>
+                        <input type="text"
+                            id="date_fin"
+                            name="date_fin"
+                            placeholder="Sélectionnez la date de départ"
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-[#009A44] focus:ring focus:ring-[#009A44]/20 transition-all"
+                            required>
+                        <div id="date_fin_error" class="text-[#862633] text-sm mt-1"></div>
+                    </div>
+                </div>
+
+                <div id="reservation_global_error" class="text-[#862633] text-sm mt-4"></div>
+
+                <!-- Submit Button -->
+                <div class="mt-6 space-y-4">
+                    <button type="submit" class="w-full worldcup-gradient hover:opacity-90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Confirmer la réservation
+                    </button>
+                    <button type="button"
+                        onclick="closeModal()"
+                        class="w-full bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-3 rounded-lg font-medium transition-all duration-300">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Footer with World Cup 2030 Theme -->
     <footer class="worldcup-gradient bg-[#862633] text-white mt-12 py-8">
         <div class="container mx-auto px-4">
@@ -281,6 +364,118 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        function openModal() {
+            document.getElementById('reservationModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('reservationModal').classList.add('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateDebutInput = document.querySelector('input[name="date_debut"]');
+            const dateFinInput = document.querySelector('input[name="date_fin"]');
+
+            dateDebutInput.addEventListener('change', function() {
+                dateFinInput.min = dateDebutInput.value;
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the available date range from the Blade template
+            const availableFrom = "{{ $annonce->disponible_du->format('Y-m-d') }}";
+            const availableTo = "{{ $annonce->disponible_au->format('Y-m-d') }}";
+
+            // Clear previous error messages
+            function clearErrors() {
+                document.getElementById('date_debut_error').textContent = '';
+                document.getElementById('date_fin_error').textContent = '';
+                document.getElementById('reservation_global_error').textContent = '';
+            }
+
+            // Initialize Flatpickr for date selection
+            const dateDebutPicker = flatpickr("#date_debut", {
+                minDate: availableFrom,
+                maxDate: availableTo,
+                dateFormat: "Y-m-d",
+                onChange: function(selectedDates, dateStr, instance) {
+                    dateFinPicker.set('minDate', dateStr);
+                    document.getElementById('date_debut_error').textContent = '';
+                }
+            });
+
+            const dateFinPicker = flatpickr("#date_fin", {
+                minDate: availableFrom,
+                maxDate: availableTo,
+                dateFormat: "Y-m-d",
+                onChange: function() {
+                    document.getElementById('date_fin_error').textContent = '';
+                }
+            });
+
+            // Form submission handler
+            document.getElementById('reservationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                clearErrors();
+
+                const startDate = document.getElementById('date_debut').value;
+                const endDate = document.getElementById('date_fin').value;
+
+                // Basic validation
+                if (!startDate) {
+                    document.getElementById('date_debut_error').textContent = 'Veuillez sélectionner une date d\'arrivée';
+                    return;
+                }
+
+                if (!endDate) {
+                    document.getElementById('date_fin_error').textContent = 'Veuillez sélectionner une date de départ';
+                    return;
+                }
+
+                // Check availability via AJAX
+                fetch("#", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            annonce_id: "{{ $annonce->id }}",
+                            date_debut: startDate,
+                            date_fin: endDate
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.available) {
+                            // If available, submit the form
+                            this.submit();
+                        } else {
+                            // Handle unavailability
+                            const globalErrorElement = document.getElementById('reservation_global_error');
+
+                            if (data.overlapping && data.overlapping.length > 0) {
+                                let errorMessage = 'Ces dates ne sont pas disponibles. ';
+                                data.overlapping.forEach(reservation => {
+                                    errorMessage += `Déjà réservé du ${reservation.date_debut} au ${reservation.date_fin}. `;
+                                });
+                                globalErrorElement.textContent = errorMessage;
+                            } else {
+                                globalErrorElement.textContent = 'Ces dates ne sont pas disponibles. Veuillez choisir d\'autres dates.';
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        document.getElementById('reservation_global_error').textContent = 'Une erreur est survenue. Veuillez réessayer.';
+                    });
+            });
+        });
+    </script>
+
 </body>
 
 </html>
