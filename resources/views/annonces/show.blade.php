@@ -236,7 +236,7 @@
                 <input type="hidden" name="annonce_id" value="{{ $annonce->id }}">
 
                 <!-- Prix récapitulatif -->
-                <div class="bg-gray-50 p-4 rounded-xl mb-6">
+                <div class="bg-gray-50 p-4 rounded-xl mb-6 border border-gray-200">
                     <div class="text-center">
                         <span class="text-3xl font-bold text-[#862633]">{{ $annonce->prix }} DH</span>
                         <span class="text-gray-600">/nuit</span>
@@ -283,7 +283,7 @@
                     </button>
                     <button type="button"
                         onclick="closeModal()"
-                        class="w-full bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-3 rounded-lg font-medium transition-all duration-300">
+                        class="w-full bg-gray-100 text-black hover:bg-gray-200 px-6 py-3 rounded-lg font-medium transition-all duration-300 border border-gray-200">
                         Annuler
                     </button>
                 </div>
