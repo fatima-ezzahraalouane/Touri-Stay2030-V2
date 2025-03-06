@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Annonce;
+use App\Models\Reservation;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -13,7 +15,7 @@ class AdminController extends Controller
         $stats = [
             'users_count' => User::count() - 1,
             'annonces_count' => Annonce::count(),
-            'reservations_count' => 0,
+            'reservations_count' => Reservation::count(),
             'signalements_count' => 0,
         ];
 
@@ -27,11 +29,25 @@ class AdminController extends Controller
     }
 
     public function deleteAnnonce($id)
-{
-    $annonce = Annonce::findOrFail($id);
-    $annonce->delete();
-    
-    return redirect()->route('admin.dashboard')
-        ->with('success', 'Annonce supprimée avec succès');
-}
+    {
+        $annonce = Annonce::findOrFail($id);
+        $annonce->delete();
+
+        return redirect()->route('admin.dashboard')
+            ->with('success', 'Annonce supprimée avec succès');
+    }
+
+    public function paiement()
+    {
+        return view('admin.paiement');
+    }
+
+    public function reservation()
+    {
+        $reservation = Reservation::with('annonce', 'user') // relation de charge rapide
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.reservation', compact('reservations'));
+    }
 }
