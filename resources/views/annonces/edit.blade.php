@@ -56,6 +56,14 @@
     </div>
     @endif
 
+    <!-- disponibilité erreur handling -->
+     @if ($errors->has('disponible_du') || $errors->has('disponible_au'))
+     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+        <p>{{ $errors->first('disponible_du') }}</p>
+        <p>{{ $errors->first('disponible_au') }}</p>
+     </div>
+     @endif
+
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
         <!-- Page Header -->
