@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Annonce;
+use App\Models\Reservation;
 
 class ProprietaireController extends Controller
 {
@@ -13,7 +14,10 @@ class ProprietaireController extends Controller
     {
         $userId = Auth::id(); //pour recuperer id du propietaire
 
-        $annonces = Annonce::where('user_id', $userId)->orderBy('created_at', 'asc')->paginate(4);
+        $annonces = Annonce::where('user_id', $userId)
+            ->with('reservations')
+            ->orderBy('created_at', 'desc')
+            ->paginate(4);
 
         return view('proprietaire.dashboard', compact('annonces'));
     }
@@ -41,8 +45,8 @@ class ProprietaireController extends Controller
         ]);
 
         //conversion des equipements en chaine json
-        // $equipements = $request->has('equipements') ? json_encode($request->equipements) : json_encode([]);
-        $equipements = json_encode($validated['equipements'] ?? []);
+        $equipements = $request->has('equipements') ? json_encode($request->equipements) : json_encode([]);
+        // $equipements = json_encode($validated['equipements'] ?? []);
 
         //creation d'annonce
         $annonce = Annonce::create([
@@ -65,7 +69,8 @@ class ProprietaireController extends Controller
         // }
 
 
-        return redirect()->route('proprietaire.dashboard')->with('success', 'Votre annonce a été publiée avec succès!');
+        return redirect()->route('proprietaire.dashboard')
+            ->with('success', 'Votre annonce a été publiée avec succès!');
     }
 
     //aficher une annonce specifique
@@ -88,7 +93,7 @@ class ProprietaireController extends Controller
         }
 
         // décoder les équipements depuis le JSON
-    $equipements = json_decode($annonce->equipements) ?: [];
+        // $equipements = json_decode($annonce->equipements) ?: [];
 
         return view('annonces.edit', compact('annonce'));
     }
@@ -114,6 +119,26 @@ class ProprietaireController extends Controller
             'images' => 'required|url|max:255',
         ]);
 
+        // Vérifier les réservations existantes
+        $conflictingReservations = $annonce->reservations()
+            ->where(function ($query) use ($validated) {
+                $query->whereBetween('date_debut', [$validated['disponible_du'], $validated['disponible_au']])
+                    ->orWhereBetween('date_fin', [$validated['disponible_du'], $validated['disponible_au']])
+                    ->orWhere(function ($q) use ($validated) {
+                        $q->where('date_debut', '<=', $validated['disponible_du'])
+                            ->where('date_fin', '>=', $validated['disponible_au']);
+                    });
+            })
+            ->exists();
+
+        // Si des réservations conflictuelles existent, renvoyer une erreur
+        if ($conflictingReservations) {
+            return back()->withErrors([
+                'disponible_du' => 'Impossible de modifier les dates. Il existe des réservations dans cette période.',
+                'disponible_au' => 'Impossible de modifier les dates. Il existe des réservations dans cette période.'
+            ])->withInput();
+        }
+
         // Conversion des équipements en chaîne JSON
         $equipements = $request->has('equipements') ? json_encode($request->equipements) : json_encode([]);
 
@@ -129,7 +154,8 @@ class ProprietaireController extends Controller
         $annonce->images = $validated['images'];
         $annonce->save();
 
-        return redirect()->route('proprietaire.dashboard')->with('success', 'Votre annonce a été mise à jour avec succès!');
+        return redirect()->route('proprietaire.dashboard')
+            ->with('success', 'Votre annonce a été mise à jour avec succès!');
     }
 
     //supprimer l'annonce de database
@@ -141,6 +167,7 @@ class ProprietaireController extends Controller
 
         $annonce->delete();
 
-        return redirect()->route('proprietaire.dashboard')->with('succes', 'L\'annonce a été suprimée avec succès!');
+        return redirect()->route('proprietaire.dashboard')
+            ->with('succes', 'L\'annonce a été suprimée avec succès!');
     }
 }
