@@ -231,7 +231,7 @@
             </div>
 
             <!-- Reservation Form -->
-            <form id="reservationForm" action="#" method="POST" class="p-6">
+            <form id="reservationForm" action="{{ route('reservation.store') }}" method="POST" class="p-6">
                 @csrf
                 <input type="hidden" name="annonce_id" value="{{ $annonce->id }}">
 
@@ -436,7 +436,7 @@
                 }
 
                 // Check availability via AJAX
-                fetch("#", {
+                fetch("{{ route('check.availability') }}", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
