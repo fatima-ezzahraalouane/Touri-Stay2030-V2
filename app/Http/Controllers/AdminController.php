@@ -44,10 +44,10 @@ class AdminController extends Controller
 
     public function reservation()
     {
-        $reservation = Reservation::with('annonce', 'user') // relation de charge rapide
+        $reservations = Reservation::with('annonce', 'user') // relation de charge rapide
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('admin.reservation', compact('reservations'));
-    }
+            return view('admin.reservation', compact('reservations'));
+        }
 }
