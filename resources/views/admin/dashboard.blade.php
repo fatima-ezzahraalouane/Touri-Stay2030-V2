@@ -76,10 +76,10 @@
                     <div class="flex items-center">
                         <span class="text-[#862633] text-lg font-semibold">Administration TouriStay 2030</span>
                     </div>
-                    <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-4">
 
                         <!-- Notifications -->
-                        <button class="text-[#862633] hover:text-[#009A44] transition-colors duration-300">
+                        <button class="text-black hover:text-gray-500">
                             <i class="fas fa-bell text-xl"></i>
                         </button>
 
@@ -95,7 +95,6 @@
                                     <i class="fas fa-user"></i>
                                 </div>
                                 @endif
-                                <!-- <i class="fas fa-chevron-down text-xs text-[#009A44]"></i> -->
                             </button>
                         </div>
                     </div>
