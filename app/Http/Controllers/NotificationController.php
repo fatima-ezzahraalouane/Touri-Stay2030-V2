@@ -10,6 +10,7 @@ class NotificationController extends Controller
     public function index()
     {
         $notifications = Auth::user()->notifications()->latest()->get();
+        
         return view('proprietaire.notifications', compact('notifications'));
     }
 
