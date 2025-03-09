@@ -35,7 +35,12 @@
                     <a href="{{ route('proprietaire.dashboard') }}" class="text-2xl font-bold text-white">WorldCup<span class="text-[#009A44]">Stay</span><span class="text-white">2030</span></a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <i class="far fa-bell text-xl text-white"></i>
+                    <a href="{{ route('proprietaire.notifications') }}" class="text-gray-700 hover:text-blue-600 relative">
+                        <i class="far fa-bell text-xl text-white"></i>
+                        <span id="notification-counter" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center {{ Auth::user()->unreadNotifications->count() > 0 ? '' : 'hidden' }}">
+                            {{ Auth::user()->unreadNotifications->count() }}
+                        </span>
+                    </a>
                     <a href="{{ route('profile.userprofile') }}" class="text-gray-700 hover:text-blue-600">
                         <i class="far fa-user-circle text-white text-xl"></i>
                     </a>
@@ -257,6 +262,149 @@
                     @endif
                 </nav>
                 @endif
+            </div>
+        </div>
+        <!-- Reservation Requests Section -->
+        <!-- Reservation Requests Section -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-[#862633] mb-6 flex items-center">
+                <i class="fas fa-calendar-check mr-3"></i>
+                Dernières demandes de réservation
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @forelse($annonces as $annonce)
+                @foreach ($annonce->reservations as $reservation)
+                <!-- Request Card -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-[1.02]">
+                    <!-- Card Header -->
+                    <div class="worldcup-gradient text-white p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-lg">{{ $annonce->titre }}</h3>
+                                <p class="text-white/80 text-sm flex items-center">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                    {{ $annonce->location }}
+                                </p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-white text-[#862633] text-xs font-bold">
+                                {{ $reservation->status }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-6">
+                        <!-- Reservation Details -->
+                        <div class="space-y-4 mb-6">
+                            <!-- User Info -->
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-[#862633]/10 flex items-center justify-center">
+                                    <i class="fas fa-user text-[#862633]"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-gray-600 text-sm">Réservé par</p>
+                                    <p class="font-semibold text-[#862633]">{{ $reservation->user->name }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Dates -->
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-[#009A44]/10 flex items-center justify-center">
+                                    <i class="fas fa-calendar-alt text-[#009A44]"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-gray-600 text-sm">Période</p>
+                                    <p class="font-semibold text-[#009A44]">
+                                        {{ \Carbon\Carbon::parse($reservation->date_debut)->format('d M') }} -
+                                        {{ \Carbon\Carbon::parse($reservation->date_fin)->format('d M Y') }}
+                                        <span class="text-sm text-gray-500">
+                                            ({{ \Carbon\Carbon::parse($reservation->date_debut)->diffInDays(\Carbon\Carbon::parse($reservation->date_fin)) }} nuits)
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-[#862633]/10 flex items-center justify-center">
+                                    <i class="fas fa-euro-sign text-[#862633]"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-gray-600 text-sm">Prix total</p>
+                                    <p class="font-semibold text-[#862633]">
+                                        {{ $reservation->total_price }} €
+                                        <span class="text-sm text-gray-500">
+                                            ({{ $reservation->price_per_night }} €/nuit)
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="bg-[#009A44] hover:opacity-90 text-white px-4 py-3 rounded-lg text-sm font-medium transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-check mr-2"></i>
+                                Accepter
+                            </button>
+                            <button class="bg-[#862633] hover:opacity-90 text-white px-4 py-3 rounded-lg text-sm font-medium transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-times mr-2"></i>
+                                Refuser
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div class="border-t border-gray-100 px-6 py-4">
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <div class="flex items-center">
+                                <i class="far fa-clock mr-2"></i>
+                                <span>Demande reçue le {{ $reservation->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="far fa-user mr-2"></i>
+                                <span>fatima-ezzahraalouane</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+                @empty
+                <!-- No Reservations -->
+                <div class="col-span-2 bg-white rounded-xl shadow-lg p-12 text-center">
+                    <i class="fas fa-calendar-times text-[#862633] text-5xl mb-4"></i>
+                    <p class="text-gray-600 text-lg">Aucune réservation disponible pour le moment.</p>
+                    <p class="text-sm text-gray-500 mt-2">
+                        Dernière vérification : 2025-03-07 12:54:02
+                    </p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Accès rapides</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="#" class="bg-gray-50 hover:bg-gray-100 rounded-lg p-4 flex items-center transition duration-300">
+                    <div class="rounded-full bg-blue-100 p-3 mr-3">
+                        <i class="fas fa-plus text-blue-600"></i>
+                    </div>
+                    <span class="text-gray-700">Créer une annonce</span>
+                </a>
+                <a href="#" class="bg-gray-50 hover:bg-gray-100 rounded-lg p-4 flex items-center transition duration-300">
+                    <div class="rounded-full bg-green-100 p-3 mr-3">
+                        <i class="fas fa-calendar-alt text-green-600"></i>
+                    </div>
+                    <span class="text-gray-700">Gérer mes disponibilités</span>
+                </a>
+                <a href="#" class="bg-gray-50 hover:bg-gray-100 rounded-lg p-4 flex items-center transition duration-300">
+                    <div class="rounded-full bg-purple-100 p-3 mr-3">
+                        <i class="fas fa-chart-line text-purple-600"></i>
+                    </div>
+                    <span class="text-gray-700">Voir mes statistiques</span>
+                </a>
             </div>
         </div>
     </div>
@@ -709,6 +857,30 @@
                     this.value = '';
                 }
             });
+        });
+    </script>
+    <script>
+        // Function to update notification count
+        function updateNotificationCount() {
+            fetch('{{ route("notifications.unreadCount") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const counter = document.getElementById('notification-counter');
+                    if (data.count > 0) {
+                        counter.textContent = data.count;
+                        counter.classList.remove('hidden');
+                    } else {
+                        counter.classList.add('hidden');
+                    }
+                });
+        }
+
+        // Update on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNotificationCount();
+
+            // Optionally poll for new notifications every minute
+            setInterval(updateNotificationCount, 60000);
         });
     </script>
 </body>
