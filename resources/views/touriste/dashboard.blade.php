@@ -2,6 +2,17 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
     <!-- Hero Section -->
     <div class="worldcup-gradient rounded-xl shadow-lg p-8 mb-8">
         <div class="flex justify-between items-start mb-6">
