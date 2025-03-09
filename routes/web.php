@@ -27,6 +27,18 @@ Route::get('/', function () {
 });
 
 
+// Route principale du dashboard qui redirige selon le rôle de l'utilisateur
+Route::get('/dashboard', function () {
+    if (auth()->user()->role === 'touriste') {
+        return redirect()->route('touriste.dashboard');
+    } elseif (auth()->user()->role === 'proprietaire') {
+        return redirect()->route('proprietaire.dashboard');
+    } elseif (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    return abort(403, 'Accès non autorisé');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 // Dashboard pour les touristes
 Route::middleware(['auth', 'verified', 'role:touriste'])->group(function () {
