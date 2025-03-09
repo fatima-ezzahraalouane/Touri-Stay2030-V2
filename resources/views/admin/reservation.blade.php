@@ -88,14 +88,20 @@
                         <span class="text-gray-800 text-lg font-semibold">Suivi des Paiements et Réservations</span>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <button class="text-gray-500 hover:text-gray-700">
+                        <button class="text-black hover:text-gray-500">
                             <i class="fas fa-bell text-xl"></i>
                         </button>
                         <div class="relative">
-                            <button class="flex items-center text-gray-700 focus:outline-none">
-                                <img src="admin.jpg" alt="Admin Avatar" class="h-8 w-8 rounded-full object-cover">
-                                <span class="ml-2">Admin TouriStay</span>
-                                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            <button class="flex items-center space-x-3 text-gray-700 focus:outline-none">
+                                @if(auth()->user()->avatar)
+                                <img src="{{ auth()->user()->avatar }}"
+                                    alt="Admin Avatar"
+                                    class="h-8 w-8 rounded-full object-cover border-2 border-[#009A44]">
+                                @else
+                                <div class="h-8 w-8 rounded-full bg-[#862633] text-black flex items-center justify-center">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                @endif
                             </button>
                         </div>
                     </div>
